@@ -1,0 +1,115 @@
+'use client';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+
+export function ApiDocs() {
+  return (
+    <div className="space-y-6">
+      <Card className="border-gray-800">
+        <CardHeader className="space-y-3">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            API Documentation
+          </CardTitle>
+          <CardDescription className="text-gray-400">
+            Complete reference for the Monero Payment Processor API
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-8">
+          <section>
+            <h2 className="text-xl font-semibold mb-3 text-white">Authentication</h2>
+            <p className="text-sm text-gray-400 mb-3">
+              All public API endpoints require authentication using an API key. Include your API key in the Authorization header:
+            </p>
+            <pre className="bg-gray-900/50 border border-gray-800 p-4 rounded-lg text-sm overflow-x-auto text-gray-300 font-mono backdrop-blur-sm">
+              <code>Authorization: Bearer YOUR_API_KEY</code>
+            </pre>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-4 text-white">Core Endpoints</h2>
+            <p className="text-sm text-gray-400 mb-4">
+              Simple API for payment processing. You only need two endpoints to get started.
+            </p>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-semibold mb-2 text-white">POST /api/payments</h3>
+                <p className="text-sm text-gray-400 mb-3">Initiate a payment request</p>
+                <pre className="bg-gray-900/50 border border-gray-800 p-4 rounded-lg text-sm overflow-x-auto text-gray-300 font-mono backdrop-blur-sm">
+{`Request:
+{
+  "amount": 1000000  // Amount in atomic units (1 XMR = 1,000,000,000,000 atomic units)
+}
+
+Response (201 Created):
+{
+  "id": "uuid",
+  "status": "pending",
+  "amount": 1000000,
+  "address": "monero-address",
+  "expiresAt": "2024-01-01T00:00:00Z"
+}`}
+                </pre>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-2 text-white">GET /api/payments/:id</h3>
+                <p className="text-sm text-gray-400 mb-3">Check payment status</p>
+                <pre className="bg-gray-900/50 border border-gray-800 p-4 rounded-lg text-sm overflow-x-auto text-gray-300 font-mono backdrop-blur-sm">
+{`Response (200 OK):
+{
+  "id": "uuid",
+  "status": "completed",
+  "amount": 1000000,
+  "address": "monero-address",
+  "expiresAt": "2024-01-01T00:00:00Z",
+  "transactionHash": "tx-hash",      // Only present when completed
+  "completedAt": "2024-01-01T00:00:00Z"  // Only present when completed
+}
+
+Status values:
+- "pending": Payment created, waiting for transaction
+- "completed": Payment received and confirmed
+- "expired": Payment expired before completion
+- "failed": Payment failed`}
+                </pre>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-3 text-white">Webhooks</h2>
+            <p className="text-sm text-gray-400 mb-3">
+              When a payment is completed, a POST request will be sent to your configured webhook URL:
+            </p>
+            <pre className="bg-gray-900/50 border border-gray-800 p-4 rounded-lg text-sm overflow-x-auto text-gray-300 font-mono backdrop-blur-sm">
+{`{
+  "event": "payment.completed",
+  "id": "uuid",
+  "amount": 1000000,
+  "transactionHash": "tx-hash",
+  "completedAt": "2024-01-01T00:00:00Z"
+}`}
+            </pre>
+            <p className="text-xs text-gray-500 mt-2">
+              Note: Webhook URL can be configured via POST /api/webhooks (optional)
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-3 text-white">Status Codes</h2>
+            <ul className="text-sm space-y-2">
+              <li className="flex items-center gap-2"><code className="bg-gray-900/50 border border-gray-800 px-2 py-1 rounded text-gray-300 font-mono">200</code> <span className="text-gray-400">- Success</span></li>
+              <li className="flex items-center gap-2"><code className="bg-gray-900/50 border border-gray-800 px-2 py-1 rounded text-gray-300 font-mono">201</code> <span className="text-gray-400">- Created</span></li>
+              <li className="flex items-center gap-2"><code className="bg-gray-900/50 border border-gray-800 px-2 py-1 rounded text-gray-300 font-mono">400</code> <span className="text-gray-400">- Bad Request</span></li>
+              <li className="flex items-center gap-2"><code className="bg-gray-900/50 border border-gray-800 px-2 py-1 rounded text-gray-300 font-mono">401</code> <span className="text-gray-400">- Unauthorized</span></li>
+              <li className="flex items-center gap-2"><code className="bg-gray-900/50 border border-gray-800 px-2 py-1 rounded text-gray-300 font-mono">404</code> <span className="text-gray-400">- Not Found</span></li>
+              <li className="flex items-center gap-2"><code className="bg-gray-900/50 border border-gray-800 px-2 py-1 rounded text-gray-300 font-mono">500</code> <span className="text-gray-400">- Internal Server Error</span></li>
+            </ul>
+          </section>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
