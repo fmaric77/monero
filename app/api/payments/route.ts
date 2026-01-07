@@ -126,13 +126,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Simplified payment response
-    // Note: Address is initially the custodial address. Mediator will replace it with 
-    // a unique subaddress within ~30 seconds. User can poll GET /api/payments/:id 
-    // to get the subaddress once assigned.
+    // Only return address if it's a subaddress (starts with '8')
+    // Don't return main address (starts with '4') - user should wait for subaddress
     const paymentResponse: PaymentResponse = {
       id: payment.paymentId,
       amount: payment.amount,
-      address: payment.address, // Initially custodial address, then subaddress
+      address: payment.address.startsWith('8') ? payment.address : '', // Only return subaddress, not main address
       status: payment.status,
       expiresAt: payment.expiresAt.toISOString(),
     };
