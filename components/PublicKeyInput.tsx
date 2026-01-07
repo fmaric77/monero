@@ -89,7 +89,7 @@ export function PublicKeyInput({ onSubmit, loading, error }: PublicKeyInputProps
               minLength={8}
             />
             <p className="text-xs text-gray-500">
-              If an account exists, you'll be logged in automatically. Otherwise, a new account will be created.
+              If an account exists, you&apos;ll be logged in automatically. Otherwise, a new account will be created.
             </p>
           </div>
           <Button type="submit" disabled={loading || !publicKey.trim() || !password} className="w-full">

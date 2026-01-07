@@ -46,8 +46,8 @@ export async function GET(request: NextRequest) {
  * If account doesn't exist, creates it and returns API key.
  */
 export async function POST(request: NextRequest) {
-  let publicKey: string;
-  let password: string;
+  let publicKey: string | undefined;
+  let password: string | undefined;
 
   try {
     await dbConnect();
