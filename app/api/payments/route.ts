@@ -25,7 +25,25 @@ export async function POST(request: NextRequest) {
     }
 
     const { user } = authResult;
-    await dbConnect();
+    
+    // Connect to database and verify connection
+    try {
+      const db = await dbConnect();
+      console.log(`Database connection status: ${db.connection.readyState} (0=disconnected, 1=connected, 2=connecting, 3=disconnecting)`);
+      if (db.connection.readyState !== 1) {
+        console.error(`Database not connected! ReadyState: ${db.connection.readyState}`);
+        return NextResponse.json(
+          { error: 'Database connection failed', code: 'DB_CONNECTION_ERROR' },
+          { status: 500 }
+        );
+      }
+    } catch (dbError: any) {
+      console.error('Database connection error:', dbError.message);
+      return NextResponse.json(
+        { error: 'Database connection failed', code: 'DB_CONNECTION_ERROR', details: dbError.message },
+        { status: 500 }
+      );
+    }
 
     const body = await request.json();
     const validationResult = createPaymentSchema.safeParse(body);
@@ -60,14 +78,52 @@ export async function POST(request: NextRequest) {
 
     // Create payment record with custodial address (auto-populated from API key)
     // The mediator will replace this with a unique subaddress within ~30 seconds
-    const payment = await Payment.create({
-      paymentId,
-      userId: user._id,
-      amount,
-      address: user.custodialAddress, // Auto-populated from user's custodial wallet
-      status: 'pending',
-      expiresAt,
-    });
+    console.log(`Creating payment: paymentId=${paymentId}, userId=${user._id}, amount=${amount}, address=${user.custodialAddress}`);
+    
+    let payment;
+    try {
+      payment = await Payment.create({
+        paymentId,
+        userId: user._id,
+        amount,
+        address: user.custodialAddress, // Auto-populated from user's custodial wallet
+        status: 'pending',
+        expiresAt,
+      });
+      console.log(`✅ Payment created successfully: ${payment.paymentId}`);
+    } catch (createError: any) {
+      console.error('❌ Payment.create() failed:', {
+        error: createError.message,
+        code: createError.code,
+        name: createError.name,
+        stack: createError.stack,
+        paymentId,
+        userId: user._id,
+        amount,
+        address: user.custodialAddress,
+      });
+      
+      // Check for duplicate key error
+      if (createError.code === 11000) {
+        return NextResponse.json(
+          { error: 'Payment ID already exists', code: 'DUPLICATE_PAYMENT' },
+          { status: 409 }
+        );
+      }
+      
+      // Re-throw to be caught by outer catch
+      throw createError;
+    }
+
+    // Verify payment was actually saved
+    const verifyPayment = await Payment.findOne({ paymentId });
+    if (!verifyPayment) {
+      console.error('❌ Payment was not saved to database after create()');
+      return NextResponse.json(
+        { error: 'Payment creation failed - record not found in database', code: 'SAVE_FAILED' },
+        { status: 500 }
+      );
+    }
 
     // Simplified payment response
     // Note: Address is initially the custodial address. Mediator will replace it with 
@@ -82,10 +138,19 @@ export async function POST(request: NextRequest) {
     };
 
     return NextResponse.json(paymentResponse, { status: 201 });
-  } catch (error) {
-    console.error('Error creating payment:', error);
+  } catch (error: any) {
+    console.error('❌ Error creating payment:', {
+      error: error.message,
+      code: error.code,
+      name: error.name,
+      stack: error.stack,
+    });
     return NextResponse.json(
-      { error: 'Internal server error', code: 'INTERNAL_ERROR' },
+      { 
+        error: 'Internal server error', 
+        code: 'INTERNAL_ERROR',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      },
       { status: 500 }
     );
   }
