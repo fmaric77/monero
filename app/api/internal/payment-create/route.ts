@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { paymentId, userId, amount, address } = validationResult.data;
+    const { paymentId, userId, amount } = validationResult.data;
 
     // Find user by publicKey
     const user = await User.findOne({ publicKey: userId });
@@ -58,7 +58,6 @@ export async function POST(request: NextRequest) {
       paymentId,
       userId: user._id,
       amount,
-      address,
       status: 'pending',
       expiresAt,
     });
@@ -70,7 +69,6 @@ export async function POST(request: NextRequest) {
           paymentId: payment.paymentId,
           status: payment.status,
           amount: payment.amount,
-          address: payment.address,
           expiresAt: payment.expiresAt.toISOString(),
         },
       },

@@ -4,7 +4,6 @@ export interface IPayment extends Document {
   paymentId: string;
   userId: Types.ObjectId;
   amount: number;
-  address: string;
   status: 'pending' | 'completed' | 'expired' | 'failed';
   transactionHash?: string;
   expiresAt: Date;
@@ -29,10 +28,6 @@ const PaymentSchema = new Schema<IPayment>(
     },
     amount: {
       type: Number,
-      required: true,
-    },
-    address: {
-      type: String,
       required: true,
     },
     status: {

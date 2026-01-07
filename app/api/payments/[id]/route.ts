@@ -36,14 +36,12 @@ export async function GET(
       );
     }
 
-    // Simplified payment response - only include optional fields when they exist
-    // Only return address if it's a subaddress (starts with '8')
-    // Don't return main address (starts with '4') - user should wait for subaddress
+    // Payment response - subaddress is tracked by mediator separately, linked by paymentId
+    // Can be fetched from mediator API if needed
     const paymentResponse: PaymentResponse = {
       id: payment.paymentId,
       status: payment.status,
       amount: payment.amount,
-      address: payment.address.startsWith('8') ? payment.address : '', // Only return subaddress, not main address
       expiresAt: payment.expiresAt.toISOString(),
     };
 

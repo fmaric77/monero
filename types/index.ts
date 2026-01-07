@@ -10,7 +10,7 @@ export interface PaymentResponse {
   id: string; // paymentId (renamed for simplicity)
   status: 'pending' | 'completed' | 'expired' | 'failed';
   amount: number;
-  address: string;
+  address?: string; // Optional - subaddress tracked by mediator, can be fetched separately if needed
   expiresAt: string;
   // Optional fields only included when relevant
   transactionHash?: string;
@@ -32,7 +32,6 @@ export interface PaymentUpdateRequest {
   status: 'pending' | 'completed' | 'expired' | 'failed';
   transactionHash?: string;
   completedAt?: string;
-  address?: string;
 }
 
 export interface BalanceUpdateRequest {
@@ -77,7 +76,6 @@ export const paymentUpdateSchema = z.object({
   status: z.enum(['pending', 'completed', 'expired', 'failed']),
   transactionHash: z.string().optional(),
   completedAt: z.string().optional(),
-  address: z.string().optional(),
 });
 
 export const balanceUpdateSchema = z.object({
@@ -94,6 +92,5 @@ export const paymentCreateSchema = z.object({
   paymentId: z.string().uuid(),
   userId: z.string().min(1),
   amount: z.number().positive().int(),
-  address: z.string().min(1),
 });
 

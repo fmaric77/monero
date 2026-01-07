@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + PAYMENT_EXPIRATION_HOURS);
 
-    // Create payment record (address will be assigned by mediator)
+    // Create payment record (subaddress will be assigned by mediator and tracked separately)
     // The mediator will assign a unique subaddress within ~30 seconds
     console.log(`Creating payment: paymentId=${paymentId}, userId=${user._id}, amount=${amount}, accountIndex=${user.accountIndex}`);
     
@@ -86,7 +86,6 @@ export async function POST(request: NextRequest) {
         paymentId,
         userId: user._id,
         amount,
-        address: '', // Will be assigned by mediator
         status: 'pending',
         expiresAt,
       });
@@ -125,13 +124,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Simplified payment response
-    // Only return address if it's a subaddress (starts with '8')
-    // Don't return main address (starts with '4') - user should wait for subaddress
+    // Payment response - subaddress is tracked by mediator separately, linked by paymentId
+    // Can be fetched from mediator API if needed
     const paymentResponse: PaymentResponse = {
       id: payment.paymentId,
       amount: payment.amount,
-      address: payment.address.startsWith('8') ? payment.address : '', // Only return subaddress, not main address
       status: payment.status,
       expiresAt: payment.expiresAt.toISOString(),
     };
