@@ -13,7 +13,7 @@ export default function Home() {
   const [accountData, setAccountData] = useState<{
     apiKey: string;
     publicKey: string;
-    custodialAddress: string | null;
+    accountIndex: number | null;
   } | null>(null);
 
   const handleSubmit = async (publicKey: string, password: string) => {
@@ -37,7 +37,7 @@ export default function Home() {
         setAccountData({
           apiKey: data.apiKey,
           publicKey: data.publicKey,
-          custodialAddress: data.custodialAddress,
+          accountIndex: data.accountIndex,
         });
         setError('');
         setView('success');
@@ -67,7 +67,7 @@ export default function Home() {
           <ApiKeyDisplay
             apiKey={accountData.apiKey}
             publicKey={accountData.publicKey}
-            custodialAddress={accountData.custodialAddress}
+            accountIndex={accountData.accountIndex}
           />
         )}
       </div>

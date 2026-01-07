@@ -7,10 +7,10 @@ import { Button } from './ui/button';
 interface ApiKeyDisplayProps {
   apiKey: string;
   publicKey: string;
-  custodialAddress: string | null;
+  accountIndex: number | null;
 }
 
-export function ApiKeyDisplay({ apiKey, publicKey, custodialAddress }: ApiKeyDisplayProps) {
+export function ApiKeyDisplay({ apiKey, publicKey, accountIndex }: ApiKeyDisplayProps) {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = () => {
@@ -37,14 +37,15 @@ export function ApiKeyDisplay({ apiKey, publicKey, custodialAddress }: ApiKeyDis
           </div>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-300">Custodial Wallet Status</label>
+          <label className="text-sm font-semibold text-gray-300">Account Status</label>
           <div className="p-4 bg-gray-900/50 border border-gray-800 rounded-lg backdrop-blur-sm">
-            {custodialAddress ? (
+            {accountIndex !== null && accountIndex !== undefined ? (
               <div>
                 <div className="text-sm text-green-400 font-semibold mb-2 flex items-center gap-2">
-                  <span className="text-green-500">✓</span> Assigned
+                  <span className="text-green-500">✓</span> Account Assigned
                 </div>
-                <div className="font-mono text-xs break-all text-gray-400">{custodialAddress}</div>
+                <div className="font-mono text-sm text-gray-300">Account Index: <span className="text-green-400">{accountIndex}</span></div>
+                <div className="text-xs text-gray-500 mt-1">Your account in the master custodial wallet</div>
               </div>
             ) : (
               <div className="text-sm text-yellow-400 flex items-center gap-2">
