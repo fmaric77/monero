@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
         paymentId,
         userId: user._id,
         amount,
-        address: user.custodialAddress,
+        accountIndex: user.accountIndex,
       });
       
       // Check for duplicate key error
