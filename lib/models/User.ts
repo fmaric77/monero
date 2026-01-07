@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IUser extends Document {
   publicKey: string;
-  custodialAddress?: string;
+  accountIndex?: number;
   passwordHash: string;
   apiKey: string;
   balance: number;
@@ -19,8 +19,8 @@ const UserSchema = new Schema<IUser>(
       unique: true,
       index: true,
     },
-    custodialAddress: {
-      type: String,
+    accountIndex: {
+      type: Number,
       required: false,
       unique: true,
       sparse: true,

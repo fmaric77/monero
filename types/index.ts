@@ -40,9 +40,9 @@ export interface BalanceUpdateRequest {
   balance: number;
 }
 
-export interface AssignCustodialWalletRequest {
+export interface AssignAccountRequest {
   publicKey: string;      // User's external address (to identify user)
-  custodialAddress: string; // New custodial wallet address to assign
+  accountIndex: number;   // Account index to assign
 }
 
 export interface UsersWithoutWalletResponse {
@@ -55,7 +55,7 @@ export interface UsersWithoutWalletResponse {
 
 export interface AccountResponse {
   publicKey: string;
-  custodialAddress: string | null;
+  accountIndex: number | null;
   balance: number;
   webhookUrl?: string;
   createdAt: string;
@@ -85,9 +85,9 @@ export const balanceUpdateSchema = z.object({
   balance: z.number().nonnegative(),
 });
 
-export const assignCustodialWalletSchema = z.object({
+export const assignAccountSchema = z.object({
   publicKey: z.string().min(1),
-  custodialAddress: z.string().min(1),
+  accountIndex: z.number().int().nonnegative(),
 });
 
 export const paymentCreateSchema = z.object({

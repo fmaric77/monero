@@ -61,12 +61,12 @@ export async function POST(request: NextRequest) {
 
     const { amount } = validationResult.data;
 
-    // Check if user has custodial address
-    if (!user.custodialAddress) {
+    // Check if user has account index
+    if (user.accountIndex === undefined || user.accountIndex === null) {
       return NextResponse.json(
         {
-          error: 'Custodial wallet not yet assigned',
-          code: 'NO_CUSTODIAL_WALLET',
+          error: 'Account not yet assigned',
+          code: 'NO_ACCOUNT',
         },
         { status: 400 }
       );
@@ -76,9 +76,9 @@ export async function POST(request: NextRequest) {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + PAYMENT_EXPIRATION_HOURS);
 
-    // Create payment record with custodial address (auto-populated from API key)
-    // The mediator will replace this with a unique subaddress within ~30 seconds
-    console.log(`Creating payment: paymentId=${paymentId}, userId=${user._id}, amount=${amount}, address=${user.custodialAddress}`);
+    // Create payment record (address will be assigned by mediator)
+    // The mediator will assign a unique subaddress within ~30 seconds
+    console.log(`Creating payment: paymentId=${paymentId}, userId=${user._id}, amount=${amount}, accountIndex=${user.accountIndex}`);
     
     let payment;
     try {
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         paymentId,
         userId: user._id,
         amount,
-        address: user.custodialAddress, // Auto-populated from user's custodial wallet
+        address: '', // Will be assigned by mediator
         status: 'pending',
         expiresAt,
       });

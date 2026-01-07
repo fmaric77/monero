@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     const accountResponse: AccountResponse = {
       publicKey: user.publicKey,
-      custodialAddress: user.custodialAddress || null,
+      accountIndex: user.accountIndex ?? null,
       balance: user.balance,
       webhookUrl: user.webhookUrl,
       createdAt: user.createdAt.toISOString(),
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         apiKey: existingUser.apiKey,
         publicKey: existingUser.publicKey,
-        custodialAddress: existingUser.custodialAddress || null,
+        accountIndex: existingUser.accountIndex ?? null,
       });
     }
 
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
       {
         apiKey: newUser.apiKey,
         publicKey: newUser.publicKey,
-        custodialAddress: newUser.custodialAddress || null,
+        accountIndex: newUser.accountIndex ?? null,
       },
       { status: 201 }
     );
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({
               apiKey: existingUser.apiKey,
               publicKey: existingUser.publicKey,
-              custodialAddress: existingUser.custodialAddress || null,
+              accountIndex: existingUser.accountIndex ?? null,
             });
           }
         }
