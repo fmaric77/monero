@@ -9,6 +9,11 @@ export interface IPayment extends Document {
   transactionHash?: string;
   expiresAt: Date;
   completedAt?: Date;
+  feeSentAt?: Date;
+  fundsForwardedAt?: Date;
+  forwardingTxHash?: string;
+  forwardingError?: string;
+  forwardingRetryCount?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,6 +58,27 @@ const PaymentSchema = new Schema<IPayment>(
     completedAt: {
       type: Date,
       required: false,
+    },
+    feeSentAt: {
+      type: Date,
+      required: false,
+    },
+    fundsForwardedAt: {
+      type: Date,
+      required: false,
+    },
+    forwardingTxHash: {
+      type: String,
+      required: false,
+    },
+    forwardingError: {
+      type: String,
+      required: false,
+    },
+    forwardingRetryCount: {
+      type: Number,
+      required: false,
+      default: 0,
     },
   },
   {

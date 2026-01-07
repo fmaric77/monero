@@ -33,6 +33,11 @@ export interface PaymentUpdateRequest {
   address?: string; // Subaddress (pushed by mediator when generated)
   transactionHash?: string;
   completedAt?: string;
+  feeSentAt?: string;
+  fundsForwardedAt?: string;
+  forwardingTxHash?: string;
+  forwardingError?: string;
+  forwardingRetryCount?: number;
 }
 
 export interface BalanceUpdateRequest {
@@ -78,6 +83,11 @@ export const paymentUpdateSchema = z.object({
   address: z.string().optional(), // Subaddress
   transactionHash: z.string().optional(),
   completedAt: z.string().optional(),
+  feeSentAt: z.string().optional(),
+  fundsForwardedAt: z.string().optional(),
+  forwardingTxHash: z.string().optional(),
+  forwardingError: z.string().optional(),
+  forwardingRetryCount: z.number().int().nonnegative().optional(),
 });
 
 export const balanceUpdateSchema = z.object({
