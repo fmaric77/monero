@@ -5,6 +5,7 @@ export interface IPayment extends Document {
   userId: Types.ObjectId;
   amount: number;
   status: 'pending' | 'completed' | 'expired' | 'failed';
+  address?: string; // Subaddress (pushed by mediator when generated)
   transactionHash?: string;
   expiresAt: Date;
   completedAt?: Date;
@@ -35,6 +36,10 @@ const PaymentSchema = new Schema<IPayment>(
       enum: ['pending', 'completed', 'expired', 'failed'],
       required: true,
       index: true,
+    },
+    address: {
+      type: String,
+      required: false,
     },
     transactionHash: {
       type: String,

@@ -36,17 +36,21 @@ export async function GET(
       );
     }
 
-    // Mediator is local and cannot be accessed from Vercel
-    // Subaddress is stored in mediator's local MongoDB
-    // The mediator processes payments asynchronously and will generate subaddresses within ~30 seconds
-    // Client should poll GET /api/payments/:id to check payment status, which will include subaddress once generated
-    
+    // Check if subaddress has been pushed by mediator
+    if (payment.address) {
+      return NextResponse.json({
+        paymentId: payment.paymentId,
+        subaddress: payment.address,
+      });
+    }
+
+    // Subaddress not yet generated - mediator will push it within ~30 seconds
     return NextResponse.json(
       { 
         error: 'Subaddress not yet generated for this payment', 
         code: 'NOT_GENERATED',
         paymentId: params.id,
-        message: 'Subaddress is generated asynchronously by the local mediator. Please check GET /api/payments/:id for payment status - the subaddress will be included once generated (usually within ~30 seconds).'
+        message: 'Subaddress is generated asynchronously by the local mediator. Please check again in a few seconds (usually within ~30 seconds).'
       },
       { status: 404 }
     );

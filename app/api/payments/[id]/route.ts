@@ -36,19 +36,17 @@ export async function GET(
       );
     }
 
-    // Subaddress is stored in mediator's local MongoDB and cannot be fetched directly
-    // It will be included in the response once the mediator has processed the payment
-    // For now, return payment without subaddress - client should use GET /api/payments/:id/subaddress
-    // which will return a helpful error message directing them to check payment status
-    
-    // Payment response - subaddress not available via direct fetch (mediator is local)
+    // Payment response - include subaddress if mediator has pushed it
     const paymentResponse: PaymentResponse = {
       id: payment.paymentId,
       status: payment.status,
       amount: payment.amount,
       expiresAt: payment.expiresAt.toISOString(),
-      // address will be null - subaddress is in mediator's local DB
     };
+
+    if (payment.address) {
+      paymentResponse.address = payment.address;
+    }
 
     // Only include optional fields if they exist
     if (payment.transactionHash) {

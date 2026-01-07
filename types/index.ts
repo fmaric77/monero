@@ -30,6 +30,7 @@ export interface WebhookConfigRequest {
 export interface PaymentUpdateRequest {
   paymentId: string;
   status: 'pending' | 'completed' | 'expired' | 'failed';
+  address?: string; // Subaddress (pushed by mediator when generated)
   transactionHash?: string;
   completedAt?: string;
 }
@@ -74,6 +75,7 @@ export const webhookConfigSchema = z.object({
 export const paymentUpdateSchema = z.object({
   paymentId: z.string().uuid(),
   status: z.enum(['pending', 'completed', 'expired', 'failed']),
+  address: z.string().optional(), // Subaddress
   transactionHash: z.string().optional(),
   completedAt: z.string().optional(),
 });

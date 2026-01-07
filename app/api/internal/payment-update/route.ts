@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { paymentId, status, transactionHash, completedAt } =
+    const { paymentId, status, address, transactionHash, completedAt } =
       validationResult.data;
 
     const payment = await Payment.findOne({ paymentId });
@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
 
     // Update payment
     if (status) payment.status = status;
+    if (address) payment.address = address; // Update subaddress when mediator generates it
     if (transactionHash) payment.transactionHash = transactionHash;
     if (completedAt) payment.completedAt = new Date(completedAt);
 
@@ -74,6 +75,7 @@ export async function POST(request: NextRequest) {
         paymentId: payment.paymentId,
         status: payment.status,
         amount: payment.amount,
+        address: payment.address,
         transactionHash: payment.transactionHash,
         completedAt: payment.completedAt?.toISOString(),
       },
