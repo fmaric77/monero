@@ -58,21 +58,25 @@ export async function POST(request: NextRequest) {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + PAYMENT_EXPIRATION_HOURS);
 
-    // Create payment record (address will be set by localhost app)
+    // Create payment record with custodial address (auto-populated from API key)
+    // The mediator will replace this with a unique subaddress within ~30 seconds
     const payment = await Payment.create({
       paymentId,
       userId: user._id,
       amount,
-      address: '', // Will be set by localhost app
+      address: user.custodialAddress, // Auto-populated from user's custodial wallet
       status: 'pending',
       expiresAt,
     });
 
     // Simplified payment response
+    // Note: Address is initially the custodial address. Mediator will replace it with 
+    // a unique subaddress within ~30 seconds. User can poll GET /api/payments/:id 
+    // to get the subaddress once assigned.
     const paymentResponse: PaymentResponse = {
       id: payment.paymentId,
       amount: payment.amount,
-      address: payment.address || '', // May be empty until localhost app sets it
+      address: payment.address, // Initially custodial address, then subaddress
       status: payment.status,
       expiresAt: payment.expiresAt.toISOString(),
     };
