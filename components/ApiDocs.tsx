@@ -26,6 +26,41 @@ export function ApiDocs() {
           </section>
 
           <section>
+            <h2 className="text-xl font-semibold mb-3 text-white">Account Management</h2>
+            <div className="space-y-6 mb-6">
+              <div>
+                <h3 className="font-semibold mb-2 text-white">POST /api/account</h3>
+                <p className="text-sm text-gray-400 mb-3">Create or authenticate account</p>
+                <pre className="bg-gray-900/50 border border-gray-800 p-4 rounded-lg text-sm overflow-x-auto text-gray-300 font-mono backdrop-blur-sm">
+{`Request:
+{
+  "publicKey": "your-monero-public-address",
+  "password": "your-password",
+  // testnet parameter removed - mainnet only for public API
+}
+
+Response (201 Created) - New account:
+{
+  "apiKey": "your-api-key",
+  "publicKey": "your-monero-public-address",
+  "accountIndex": 0
+}
+
+Response (200 OK) - Existing account:
+{
+  "apiKey": "your-api-key",
+  "publicKey": "your-monero-public-address",
+  "accountIndex": 0
+}
+
+Note: All accounts are created on Monero mainnet. 
+Testnet is available for internal/admin use only.`}
+                </pre>
+              </div>
+            </div>
+          </section>
+
+          <section>
             <h2 className="text-xl font-semibold mb-4 text-white">Core Endpoints</h2>
             <p className="text-sm text-gray-400 mb-4">
               Simple API for payment processing. You only need two endpoints to get started.
@@ -68,6 +103,7 @@ once the subaddress is generated and pushed by the mediator.`}
   "amount": 1000000,
   "address": "monero-address",       // Included once mediator generates it (~30 seconds)
   "expiresAt": "2024-01-01T00:00:00Z",
+      // testnet field removed - mainnet only
   "transactionHash": "tx-hash",      // Only present when completed
   "completedAt": "2024-01-01T00:00:00Z"  // Only present when completed
 }
@@ -124,6 +160,29 @@ subaddress in the "address" field.`}
             </pre>
             <p className="text-xs text-gray-500 mt-2">
               Note: Webhook URL can be configured via POST /api/webhooks (optional)
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-3 text-white">Network</h2>
+            <p className="text-sm text-gray-400 mb-3">
+              This service operates on Monero mainnet for production use.
+            </p>
+            <div className="p-3 bg-gray-900/50 border border-gray-800 rounded mb-4">
+              <p className="font-semibold mb-2 text-gray-300">Network Details:</p>
+              <ul className="text-sm text-gray-400 space-y-1 ml-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-green-400">✓</span>
+                  <span><strong>Network:</strong> Monero Mainnet</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-400">✓</span>
+                  <span><strong>Currency:</strong> Real Monero (XMR)</span>
+                </li>
+              </ul>
+            </div>
+            <p className="text-xs text-gray-500">
+              All accounts are created on mainnet. Testnet is available for internal/admin use only.
             </p>
           </section>
 

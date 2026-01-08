@@ -11,6 +11,7 @@ A Next.js application for processing Monero payments with a custodial wallet sys
 - Balance management
 - Webhook notifications for payment completion
 - RESTful API with API key authentication
+- **Testnet Support**: Separate testnet and mainnet environments with complete isolation
 
 ## Architecture
 
@@ -55,6 +56,53 @@ The system consists of two main components:
    
    **Note:** The mediator runs locally and cannot be accessed from Vercel. Subaddresses are generated asynchronously by the mediator within ~30 seconds of payment creation.
 
+## Testnet Support
+
+The system supports both testnet and mainnet with complete isolation:
+
+- **Separate API Keys**: Users get different API keys for testnet vs mainnet (completely separate user accounts)
+- **Separate Databases**: Different MongoDB databases for testnet/mainnet
+- **Network Selection**: Determined by the `testnet` flag when creating an account
+
+### Creating Testnet Accounts
+
+When creating an account via `POST /api/account`, include `testnet: true` in the request body:
+
+```json
+{
+  "publicKey": "your-testnet-public-key",
+  "password": "your-password",
+  "testnet": true
+}
+```
+
+The response will include the `testnet` flag:
+
+```json
+{
+  "apiKey": "your-api-key",
+  "publicKey": "your-testnet-public-key",
+  "accountIndex": 0,
+  "testnet": true
+}
+```
+
+### Running Separate Mediator Processes
+
+Run separate mediator processes for mainnet and testnet:
+
+**Mainnet:**
+```bash
+MONERO_TESTNET=false MONGO_URI=mongodb://.../monero_mainnet npm start
+```
+
+**Testnet:**
+```bash
+MONERO_TESTNET=true MONGO_URI=mongodb://.../monero_testnet npm start
+```
+
+See `monero-mediator/.env.mainnet.example` and `monero-mediator/.env.testnet.example` for configuration examples.
+
 4. Run development server:
    ```bash
    npm run dev
@@ -84,12 +132,13 @@ See `/docs` page for complete API documentation.
 ## Database Schema
 
 ### User Model
-- `publicKey` - User's Monero public address (unique)
-- `accountIndex` - System-assigned account index in master wallet (nullable, unique)
+- `publicKey` - User's Monero public address (unique per network)
+- `accountIndex` - System-assigned account index in master wallet (nullable, unique per network)
 - `passwordHash` - Hashed password
 - `apiKey` - API key for authentication (unique)
 - `balance` - XMR balance in atomic units (calculated from transfers to user's subaddresses)
 - `webhookUrl` - Optional webhook URL for notifications
+- `testnet` - Boolean flag indicating testnet (default: false)
 
 ### Payment Model
 - `paymentId` - Unique payment identifier (UUID)
@@ -98,6 +147,7 @@ See `/docs` page for complete API documentation.
 - `status` - Payment status (pending/completed/expired/failed)
 - `transactionHash` - Monero transaction hash (optional)
 - `expiresAt` - Payment expiration timestamp
+- `testnet` - Boolean flag indicating testnet (inherited from user)
 
 **Note:** Subaddresses are stored separately by the mediator and linked by `paymentId`. They are returned in API responses but not stored in the Payment model.
 

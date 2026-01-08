@@ -27,6 +27,7 @@ export async function GET(
     const payment = await Payment.findOne({
       paymentId: params.id,
       userId: user._id,
+      testnet: user.testnet, // Ensure payment belongs to user's network
     });
 
     if (!payment) {
@@ -42,6 +43,7 @@ export async function GET(
       status: payment.status,
       amount: payment.amount,
       expiresAt: payment.expiresAt.toISOString(),
+      testnet: payment.testnet,
     };
 
     if (payment.address) {

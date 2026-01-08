@@ -14,6 +14,7 @@ export interface IPayment extends Document {
   forwardingTxHash?: string;
   forwardingError?: string;
   forwardingRetryCount?: number;
+  testnet: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -79,6 +80,12 @@ const PaymentSchema = new Schema<IPayment>(
       type: Number,
       required: false,
       default: 0,
+    },
+    testnet: {
+      type: Boolean,
+      required: true,
+      default: false,
+      index: true,
     },
   },
   {

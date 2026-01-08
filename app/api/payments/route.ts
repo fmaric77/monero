@@ -88,6 +88,7 @@ export async function POST(request: NextRequest) {
         amount,
         status: 'pending',
         expiresAt,
+        testnet: user.testnet,
       });
       console.log(`✅ Payment created successfully: ${payment.paymentId}`);
     } catch (createError: any) {
@@ -135,6 +136,7 @@ export async function POST(request: NextRequest) {
       amount: payment.amount,
       status: payment.status,
       expiresAt: payment.expiresAt.toISOString(),
+      testnet: payment.testnet,
       // address will be null initially - use GET /api/payments/:id to fetch once mediator pushes it
     };
 

@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Label } from './ui/label';
 
 interface PublicKeyInputProps {
-  onSubmit: (publicKey: string, password: string) => void;
+  onSubmit: (publicKey: string, password: string, testnet: boolean) => void;
   loading?: boolean;
   error?: string;
 }
@@ -36,7 +36,8 @@ export function PublicKeyInput({ onSubmit, loading, error }: PublicKeyInputProps
       return;
     }
 
-    onSubmit(publicKey.trim(), password);
+    // Always use mainnet for public UI (testnet is admin-only)
+    onSubmit(publicKey.trim(), password, false);
   };
 
   const displayError = error || localError;
@@ -91,6 +92,15 @@ export function PublicKeyInput({ onSubmit, loading, error }: PublicKeyInputProps
             <p className="text-xs text-gray-500">
               If an account exists, you&apos;ll be logged in automatically. Otherwise, a new account will be created.
             </p>
+          </div>
+          <div className="p-3 bg-gray-900/30 border border-gray-800 rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-green-400">🌐</span>
+              <div>
+                <div className="text-sm font-medium text-green-400">Mainnet</div>
+                <div className="text-xs text-gray-500">Using real Monero</div>
+              </div>
+            </div>
           </div>
           <Button type="submit" disabled={loading || !publicKey.trim() || !password} className="w-full">
             {loading ? 'Processing...' : 'Continue'}

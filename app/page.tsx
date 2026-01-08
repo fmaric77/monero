@@ -14,9 +14,10 @@ export default function Home() {
     apiKey: string;
     publicKey: string;
     accountIndex: number | null;
+    testnet: boolean;
   } | null>(null);
 
-  const handleSubmit = async (publicKey: string, password: string) => {
+  const handleSubmit = async (publicKey: string, password: string, testnet: boolean) => {
     setLoading(true);
     setError('');
 
@@ -29,6 +30,7 @@ export default function Home() {
         body: JSON.stringify({
           publicKey,
           password,
+          testnet,
         }),
       });
 
@@ -38,6 +40,7 @@ export default function Home() {
           apiKey: data.apiKey,
           publicKey: data.publicKey,
           accountIndex: data.accountIndex,
+          testnet: data.testnet ?? false,
         });
         setError('');
         setView('success');
@@ -68,6 +71,7 @@ export default function Home() {
             apiKey={accountData.apiKey}
             publicKey={accountData.publicKey}
             accountIndex={accountData.accountIndex}
+            testnet={accountData.testnet}
           />
         )}
       </div>

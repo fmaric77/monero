@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
       accountIndex: user.accountIndex ?? null,
       balance: user.balance,
       webhookUrl: user.webhookUrl,
+      testnet: user.testnet,
       createdAt: user.createdAt.toISOString(),
     };
 
@@ -48,6 +49,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   let publicKey: string | undefined;
   let password: string | undefined;
+  let testnet: boolean | undefined;
 
   try {
     await dbConnect();
@@ -55,6 +57,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     publicKey = body.publicKey;
     password = body.password;
+    testnet = body.testnet !== undefined ? Boolean(body.testnet) : false;
 
     if (!publicKey || !password) {
       return NextResponse.json(
@@ -70,8 +73,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user exists
-    const existingUser = await User.findOne({ publicKey });
+    // Check if user exists (publicKey is unique per network)
+    const existingUser = await User.findOne({ publicKey, testnet });
 
     if (existingUser) {
       // Account exists - verify password
@@ -90,6 +93,7 @@ export async function POST(request: NextRequest) {
         apiKey: existingUser.apiKey,
         publicKey: existingUser.publicKey,
         accountIndex: existingUser.accountIndex ?? null,
+        testnet: existingUser.testnet,
       });
     }
 
@@ -103,6 +107,7 @@ export async function POST(request: NextRequest) {
       passwordHash,
       apiKey,
       balance: 0,
+      testnet,
     });
 
     return NextResponse.json(
@@ -110,6 +115,7 @@ export async function POST(request: NextRequest) {
         apiKey: newUser.apiKey,
         publicKey: newUser.publicKey,
         accountIndex: newUser.accountIndex ?? null,
+        testnet: newUser.testnet,
       },
       { status: 201 }
     );
@@ -131,6 +137,7 @@ export async function POST(request: NextRequest) {
               apiKey: existingUser.apiKey,
               publicKey: existingUser.publicKey,
               accountIndex: existingUser.accountIndex ?? null,
+              testnet: existingUser.testnet,
             });
           }
         }

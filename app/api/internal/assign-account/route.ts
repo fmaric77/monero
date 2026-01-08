@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
 
     const { publicKey, accountIndex } = validationResult.data;
 
+    // Find user by publicKey (which is unique per network due to compound index)
     const user = await User.findOne({ publicKey });
 
     if (!user) {
@@ -54,8 +55,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if account index is already assigned to another user
-    const existingUser = await User.findOne({ accountIndex });
+    // Check if account index is already assigned to another user on the same network
+    const existingUser = await User.findOne({ accountIndex, testnet: user.testnet });
     if (existingUser) {
       return NextResponse.json(
         {

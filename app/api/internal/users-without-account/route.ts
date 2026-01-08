@@ -21,10 +21,13 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '100', 10);
+    const testnetParam = searchParams.get('testnet');
+    const testnet = testnetParam === 'true';
 
-    // Find users without accountIndex
+    // Find users without accountIndex, filtered by network
     const users = await User.find({
       accountIndex: { $exists: false },
+      testnet,
     })
       .select('_id publicKey createdAt')
       .limit(limit)

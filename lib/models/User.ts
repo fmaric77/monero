@@ -7,6 +7,7 @@ export interface IUser extends Document {
   apiKey: string;
   balance: number;
   webhookUrl?: string;
+  testnet: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,14 +17,11 @@ const UserSchema = new Schema<IUser>(
     publicKey: {
       type: String,
       required: true,
-      unique: true,
       index: true,
     },
     accountIndex: {
       type: Number,
       required: false,
-      unique: true,
-      sparse: true,
       index: true,
     },
     passwordHash: {
@@ -45,11 +43,21 @@ const UserSchema = new Schema<IUser>(
       type: String,
       required: false,
     },
+    testnet: {
+      type: Boolean,
+      required: true,
+      default: false,
+      index: true,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Compound indexes for uniqueness per network
+UserSchema.index({ publicKey: 1, testnet: 1 }, { unique: true });
+UserSchema.index({ accountIndex: 1, testnet: 1 }, { unique: true, sparse: true });
 
 // Ensure the model is only compiled once
 let User: Model<IUser>;
